@@ -4,6 +4,8 @@ import argparse
 from pathlib import Path
 
 import magic
+from tqdm import tqdm
+
 from file_typer import VERSION, argutils, type_table
 
 table = type_table.TABLE
@@ -28,6 +30,11 @@ def parse_arguments():
                         action='store_true',
                         default=False,
                         help='Show what will be done. If set, just print will occur, no renaming')
+    parser.add_argument('-C',
+                        '--check',
+                        action='store_true',
+                        default=False,
+                        help='Show what will be done. If set, just print will occur, no renaming')
 
     parser.add_argument('FILE',
                         nargs='+',
@@ -47,11 +54,11 @@ def main():
         if path.is_dir():
             execute_dir(config, path)
         elif path.is_file():
-            execute_file(config, path)
+            execute_file(config, path, None)
     # print mimes
-    print("Mime Types:")
+    print("Unknown Mime Types:")
     for mime in sorted(config["mimes"]):
-        print(f"\"{mime}\": \".\",")
+        print(f'"{mime}": ".",')
 
 
 def execute_dir(config, directory):
@@ -60,10 +67,14 @@ def execute_dir(config, directory):
     Args:
         config (_type_): _description_
     """
-    for path in Path(directory).glob('**/*'):
-        execute_file(config, path)
+    print(f"Calculating files on folder: {directory}")
+    list_of = list(Path(directory).glob('**/*'))
+    total = len(list_of)
+    p_bar =  tqdm(list_of, mininterval=3,total=total, desc="Processando")
+    for path in p_bar:
+        execute_file(config, path, p_bar)
 
-def execute_file(config, p_file):
+def execute_file(config, p_file, p_bar):
     """_summary_
 
     Args:
@@ -79,19 +90,23 @@ def execute_file(config, p_file):
         return
     #processing file
     mime = magic.from_file(p_file, mime=True)
-    ext = table.get(mime, None)
+    ext = table.get(mime, '')
     if len(ext) > 1:
         new_p=p_file.with_suffix(ext)
-
+        if config.get('check', False):
+            return
         if config.get('dry_run', False):
-            print(f"[CHG] Renaming to {new_p.name} [DRY]")
+            if not p_bar:
+                print(f"[CHG] Renaming to {new_p.name} [DRY]")
         else:
-            print(f"[CHG] Renaming to {new_p.name}")
+            if not p_bar:
+                print(f"[CHG] Renaming to {new_p.name}")
             p_file.rename(new_p)
-
     else:
-        print(f"[IGN] Mime {mime} not found in hash table...")
+        if not p_bar:
+            print(f"[IGN] Mime {mime} not found in hash table...")
         config["mimes"].add(mime)
+
 
 if __name__ == "__main__":
     main()
