@@ -1,3 +1,4 @@
 python-magic
 tqdm
 pytest
+bump2version

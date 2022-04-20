@@ -10,7 +10,7 @@ here = path.abspath(path.dirname(__file__))
 
 SOFTWARE_NAME = 'file-typer'
 
-VERSION = '0.0.1'
+VERSION = '0.0.5'
 
 # Get the long description from the relevant file
 with open(path.join(here, 'README.md'), encoding='utf-8') as f:
@@ -114,7 +114,7 @@ setup(
     # pip to create the appropriate form of executable for the target platform.
     entry_points={
         'console_scripts': [
-            'file-typer=file_typer',
+            'file-typer=file_typer:main',
         ],
     }
 )
