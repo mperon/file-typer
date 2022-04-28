@@ -11,7 +11,7 @@ from file_typer import VERSION, argutils, type_table
 
 table = type_table.TABLE
 
-VERSION = '0.0.5'
+VERSION = '0.0.9'
 
 
 def parse_arguments():
@@ -21,8 +21,12 @@ def parse_arguments():
         _type_: _description_
     """
     parser = argparse.ArgumentParser(
-        prog='typer',
-        description='Add extension to files without-it')
+        description='Add extension to files without-it',
+        epilog="""
+        - Created by Marcos Peron (mperon@outlook.com)
+        [MIT License]
+        """
+    )
     parser.add_argument('--version',
                         action='version',
                         version='%(prog)s '+VERSION)

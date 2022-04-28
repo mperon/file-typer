@@ -631,5 +631,13 @@ TABLE = {
     "audio/x-hx-aac-adts": ".aac",
     "image/heic": ".heic",
     "application/x-sqlite3": ".sqlite3",
-    "application/gzip": ".gz"
+    "application/gzip": ".gz",
+    "application/vnd.ms-opentype": ".otf",
+    "application/x-dbt": ".dbt",
+    "application/x-dmp": ".dmp",
+    "application/x-dosexec": ".exe",
+    "application/zlib": ".zlib",
+    "audio/amr": ".amr",
+    "font/sfnt": ".ttf",
+    "image/jp2": ".jp2",
 }
