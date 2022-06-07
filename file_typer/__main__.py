@@ -11,7 +11,7 @@ from file_typer import VERSION, argutils, type_table
 
 table = type_table.TABLE
 
-VERSION = '0.0.9'
+VERSION = '0.0.10'
 
 
 def parse_arguments():

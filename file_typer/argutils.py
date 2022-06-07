@@ -211,17 +211,17 @@ class FileFinder:
         paths = []
         self.fname = expand_path(self.fname)
         if os.path.isfile(self.fname) and is_readable(self.fname):
-            with open(self.fname, 'r', 'utf-8') as fp:
+            with open(self.fname, mode='r', encoding='utf-8') as fp:
                 for line in fp:
+                    ln = line.strip()
                     if line.strip() == "":
                         continue
-                    elif any(map(lambda x: line.strip().startswith(x), FileFinder.COMMENTS)):
+                    if any(map(lambda x: ln.startswith(x), FileFinder.COMMENTS)):
                         continue  # is a comment, ignore line
-                    else:
-                        path = os.path.abspath(os.path.expanduser(
-                            os.path.expandvars(line.strip())))
-                        if os.path.isdir(path):
-                            paths.append(path)
+                    path = os.path.abspath(os.path.expanduser(
+                        os.path.expandvars(line.strip())))
+                    if os.path.isdir(path):
+                        paths.append(path)
         self.paths = tuple(paths)
 
     def file_exists(self, path):
