@@ -25,7 +25,8 @@ release:
 	git push --tags
 
 tag:
-	git tag -a v$(python setup.py --version)
+	git tag -a v`python setup.py --version` -m "Version `python setup.py --version`"
+	git push --tags
 
 minor:
 	bump2version minor --allow-dirty
