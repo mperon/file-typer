@@ -211,7 +211,7 @@ class FileFinder:
         paths = []
         self.fname = expand_path(self.fname)
         if os.path.isfile(self.fname) and is_readable(self.fname):
-            with open(self.fname, 'utf-8') as fp:
+            with open(self.fname, 'r', 'utf-8') as fp:
                 for line in fp:
                     if line.strip() == "":
                         continue
