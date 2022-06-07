@@ -28,12 +28,6 @@ jobs:
               with:
                   files: ./dist/
                   dest: FileTyper-dist.zip
-            - name: Uploading Release
-              uses: svenstaro/upload-release-action@v2
-              with:
-                  repo_token: ${{ secrets.GITHUB_TOKEN }}
-                  file: ./FileTyper-dist.zip
-                  tag: ${{ github.ref }}
             - name: Uploading Wheel
               uses: svenstaro/upload-release-action@v2
               with:
