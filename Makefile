@@ -1,3 +1,5 @@
+
+
 test: patch
 	python3 -m pytest
 
@@ -14,6 +16,14 @@ dist: patch clean
 patch:
 	bump2version patch --allow-dirty
 
+release:
+	bump2version patch --allow-dirty
+	# Set next version number
+	# Create tags
+	git commit --allow-empty -m Release\ `python setup.py --version`
+	git tag -a v`python setup.py --version` -m "Version `python setup.py --version`"
+	git push --tags
+
 tag:
 	git tag -a v$(python setup.py --version)
 
@@ -23,4 +33,4 @@ minor:
 upload:
 	twine upload dist/*
 
-.PHONY: dist upload test patch minor tag
+.PHONY: dist upload test patch minor tag release
