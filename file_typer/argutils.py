@@ -2,7 +2,6 @@
 
 this do some stuff
 """
-# vim: ts=4 sw=4 et
 import argparse
 import os
 from urllib.parse import urlparse
@@ -37,8 +36,7 @@ def is_dir(dirname):
     if not os.path.isdir(dirname):
         msg = f"{dirname} is not a directory"
         raise argparse.ArgumentTypeError(msg)
-    else:
-        return dirname
+    return dirname
 
 
 def can_create_dir(path):
@@ -53,11 +51,9 @@ def can_create_dir(path):
     parts = os.path.split(path)
     if os.path.exists(parts[0]):
         return True
-    else:
-        if not parts[1] == '':
-            return can_create_dir(parts[0])
-        else:
-            return False
+    if not parts[1] == '':
+        return can_create_dir(parts[0])
+    return False
 
 
 def is_searchable_file(path):
@@ -130,14 +126,13 @@ def is_valid_dir(path):
         _type_: _description_
     """
     path = expand_path(path)
-    if is_dir(path):
+    if os.path.isdir(path):
         return path
-    else:
-        # is not a directory, verify file
-        if not os.path.exists(path):
-            # path dont exist, check if can be create
-            if can_create_dir(path):
-                return path
+    # is not a directory, verify file
+    if not os.path.exists(path):
+        # path dont exist, check if can be create
+        if can_create_dir(path):
+            return path
     raise argparse.ArgumentTypeError(
         f"{path} is not a valid directory path")
 
@@ -216,7 +211,7 @@ class FileFinder:
                     ln = line.strip()
                     if line.strip() == "":
                         continue
-                    if any(map(lambda x: ln.startswith(x), FileFinder.COMMENTS)):
+                    if any(map(ln.startswith, FileFinder.COMMENTS)):
                         continue  # is a comment, ignore line
                     path = os.path.abspath(os.path.expanduser(
                         os.path.expandvars(line.strip())))
