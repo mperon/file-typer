@@ -3,3 +3,5 @@ tqdm
 pytest
 bump2version
 twine
+pylint
+autopep8
