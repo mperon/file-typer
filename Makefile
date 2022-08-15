@@ -20,9 +20,11 @@ release:
 	bump2version patch --allow-dirty
 	# Set next version number
 	# Create tags
+	git add .bumpversion.cfg setup.py file_typer/__main__.py
 	git commit --allow-empty -m Release\ `python setup.py --version`
-	git tag -sa v`python setup.py --version` -m "Version `python setup.py --version`"
-	git push --follow-tags
+	git push --all
+	git tag -a v`python setup.py --version` -m "Version `python setup.py --version`"
+	git push --tags
 
 tag:
 	git tag -a v`python setup.py --version` -m "Version `python setup.py --version`"
