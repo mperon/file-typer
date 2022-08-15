@@ -10,7 +10,7 @@ here = path.abspath(path.dirname(__file__))
 
 SOFTWARE_NAME = 'file-typer'
 
-VERSION = '1.0.4'
+VERSION = '1.0.5'
 
 # Get the long description from the relevant file
 with open(path.join(here, 'README.md'), encoding='utf-8') as f:
