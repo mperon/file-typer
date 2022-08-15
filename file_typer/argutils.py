@@ -182,14 +182,6 @@ def is_readable(path):
     return os.access(path, os.R_OK)
 
 
-class FullPaths(argparse.Action):
-    """Expand user- and relative-paths"""
-
-    def __call__(self, parser, namespace, values, option_string=None):
-        setattr(namespace, self.dest, os.path.abspath(
-            os.path.expanduser(values)))
-
-
 class FileFinder:
     """_summary_
 
@@ -206,12 +198,12 @@ class FileFinder:
         paths = []
         self.fname = expand_path(self.fname)
         if os.path.isfile(self.fname) and is_readable(self.fname):
-            with open(self.fname, mode='r', encoding='utf-8') as fp:
-                for line in fp:
-                    ln = line.strip()
+            with open(self.fname, mode='r', encoding='utf-8') as file:
+                for line in file:
+                    line = line.strip()
                     if line.strip() == "":
                         continue
-                    if any(map(ln.startswith, FileFinder.COMMENTS)):
+                    if any(map(line.startswith, FileFinder.COMMENTS)):
                         continue  # is a comment, ignore line
                     path = os.path.abspath(os.path.expanduser(
                         os.path.expandvars(line.strip())))

@@ -32,4 +32,4 @@ all the options, execute:
 
 To process a folder, run with this command:
 
-`file-typer /path/to/folder`
+`file-typer /path/to/folder -o /path/to/output`

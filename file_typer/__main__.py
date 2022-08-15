@@ -8,7 +8,7 @@ from file_typer.impl import AddExtensionAction, ProgressBarAction, Walker
 
 table = type_table.TABLE
 
-VERSION = '0.0.20'
+VERSION = '1.0.2'
 
 
 def parse_arguments():
@@ -74,9 +74,13 @@ def main():
     """_summary_
     """
     config = parse_arguments()
+    output = config['output']
     action = AddExtensionAction()
     for path in config.get('FILE', []):
         path = Path(path)
+        if Path(output) == Path(path):
+            print("ERROR: Output is the same folder that input! Skipping.")
+            continue
         walker = Walker.create(path, config)
         if not config["no_progress"]:
             action = ProgressBarAction(action, path)

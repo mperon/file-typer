@@ -367,6 +367,7 @@ class Walker:
             return self._config
         if self.parent:
             return self.parent.config
+        return {}
 
     def execute(self, action, path):
         """_summary_
@@ -390,8 +391,7 @@ class Walker:
         """
         if Path(path).is_dir():
             return DirectoryWalker(None, path, config)
-        else:
-            return FileWalker(None, path, config)
+        return FileWalker(None, path, config)
 
 
 class FileWalker(Walker):
