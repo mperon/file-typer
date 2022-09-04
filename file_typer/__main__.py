@@ -47,11 +47,6 @@ def parse_arguments():
                         action='store_true',
                         default=False,
                         help='Just copy renamed files, not the entire structure')
-    parser.add_argument('-D',
-                        '--debug',
-                        action='store_true',
-                        default=False,
-                        help='Show info messages')
     parser.add_argument('-o',
                         '--output',
                         action='store',
