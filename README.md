@@ -8,6 +8,8 @@ show the users the file preview, and cannot open-it.
 This tool allows the user pass an directory/file and traverse-it, renaming
 files, putting extension of known table into-it, based on mimetypes
 
+Now, if an FileListInfo found, the tool process-it and rename files acording to metadata presented. (this file is sent by Apple in law enforcement return).
+
 ## Requirements
 
 * You must install Python 3.8 ou superior.
