@@ -353,7 +353,8 @@ class Walker:
             print("From: {p_file_from} -> {p_destination}.", end='')
 
         # ensures that directory exists
-        Path(p_destination).parent.mkdir(exist_ok=True, parents=True)
+        if not Path(p_destination).parent.exists():
+            Path(p_destination).parent.mkdir(exist_ok=True, parents=True)
 
         # copy file to new location
         shutil.copy(p_file_from, p_destination)
