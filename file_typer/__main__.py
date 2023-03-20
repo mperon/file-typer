@@ -27,7 +27,7 @@ def parse_arguments():
     parser.add_argument('--version',
                         action='version',
                         version='%(prog)s '+VERSION)
-    parser.add_argument('-D',
+    parser.add_argument('-U',
                         '--dry-run',
                         action='store_true',
                         default=False,
