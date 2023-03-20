@@ -8,7 +8,7 @@ from file_typer.impl import AddExtensionAction, ProgressBarAction, Walker
 
 table = type_table.TABLE
 
-VERSION = '1.0.16'
+VERSION = '1.0.17'
 
 
 def parse_arguments():
