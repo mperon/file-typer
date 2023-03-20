@@ -22,20 +22,20 @@ SEEK_DATA = [
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com\
 /DTDs/PropertyList-1.0.dtd">',
-    '<plist version="1.0">'
+    '<plist version="1.0">',
 ]
 FILEINFO_NAME = "FileInfoList"
 KEYBAG_NAME = "keyBag"
 APPLY_REGEX = (
-    (re.compile(r'(\r\n|\n)'), ' '),  # remove all newlines
-    (re.compile(r'\}\](\s+)?\['), '},'),  # remove all }][
-    (re.compile(r'\t+'), ' '),  # replaces tabs with spaces
+    (re.compile(r"(\r\n|\n)"), " "),  # remove all newlines
+    (re.compile(r"\}\](\s+)?\["), "},"),  # remove all }][
+    (re.compile(r"\t+"), " "),  # replaces tabs with spaces
 )
 
 
 class AppleInfo:
-    """_summary_
-    """
+    """_summary_"""
+
     SEARCH_NAME = "NO.txt"
 
     def real_id(self, fid):
@@ -47,8 +47,8 @@ class AppleInfo:
         Returns:
             _type_: _description_
         """
-        real = str(fid).replace('__', '/')
-        real = real.replace('_', ':')
+        real = str(fid).replace("__", "/")
+        real = real.replace("_", ":")
         return real
 
     @classmethod
@@ -69,8 +69,8 @@ class AppleInfo:
 
 
 class FileInfoList(AppleInfo):
-    """_summary_
-    """
+    """_summary_"""
+
     SEARCH_NAME = f"{FILEINFO_NAME}.zip"
 
     def __init__(self, parent=None, path=None) -> None:
@@ -95,8 +95,9 @@ class FileInfoList(AppleInfo):
             zip_file = path / self.SEARCH_NAME
             if zip_file.exists():
                 with ZipFile(zip_file) as zip_file:
-                    with io.TextIOWrapper(zip_file.open(f"{FILEINFO_NAME}.txt", mode="r"),
-                                          encoding="utf-8") as file:
+                    with io.TextIOWrapper(
+                        zip_file.open(f"{FILEINFO_NAME}.txt", mode="r"), encoding="utf-8"
+                    ) as file:
                         lines = file.readlines()
                         self.from_text(lines)
 
@@ -111,7 +112,7 @@ class FileInfoList(AppleInfo):
         """
         start = 0
         if not isinstance(text, list):
-            return self.from_text(re.split(r'(\r\n|\n)', text))
+            return self.from_text(re.split(r"(\r\n|\n)", text))
         for lno, line in enumerate(text):
             if str(line).strip().startswith(r'[{"id":'):
                 start = lno
@@ -164,32 +165,29 @@ class FileInfoList(AppleInfo):
         item = self.data.get(self.real_id(fid), None)
         if item:
             plist_xml = item["fields"]["encryptedAttributes"]
-            plist_bin = bytes(plist_xml, 'utf-8')
+            plist_bin = bytes(plist_xml, "utf-8")
             plist = plistlib.loads(plist_bin)
             return plist["relativePath"]
         if self.parent:
             return self.parent.get_real_name(fid)
-        return ''
+        return ""
 
     def _load_lines(self, lines):
         contents = " ".join(lines)
         # process text file
         for seek in SEEK_DATA:
-            contents = contents.replace(
-                seek, seek.replace('"', '\\"'))
-        for (regx, sub) in APPLY_REGEX:
+            contents = contents.replace(seek, seek.replace('"', '\\"'))
+        for regx, sub in APPLY_REGEX:
             contents = regx.sub(sub, contents)
-        contents = '{"records": ' + contents + '}'
+        contents = '{"records": ' + contents + "}"
         return json.loads(contents)
 
 
 class Action:
-    """_summary_
-    """
+    """_summary_"""
 
     def start(self):
-        """_summary_
-        """
+        """_summary_"""
 
     def execute(self, ctx, p_file):
         """_summary_
@@ -238,8 +236,7 @@ class ProgressBarAction(Action):
         Returns:
             _type_: _description_
         """
-        return sum(len(files)
-                   for _, _, files in os.walk(str(Path(path))))
+        return sum(len(files) for _, _, files in os.walk(str(Path(path))))
 
     def execute(self, ctx, p_file):
         """_summary_
@@ -267,11 +264,11 @@ class AddExtensionAction(Action):
 
     def execute(self, ctx, p_file):
         if p_file.is_dir():
-            #print("[PASS] File is directory..")
+            # print("[PASS] File is directory..")
             return
         # check file has already extension
         if len(p_file.suffixes) > 0:
-            if ctx.config['no_copy']:
+            if ctx.config["no_copy"]:
                 return
             ctx.copy_file(p_file, p_file.name)
             return
@@ -288,7 +285,7 @@ class AddExtensionAction(Action):
                 print(f"Impossible to detect mime for {p_file}. Copying..")
                 ctx.copy_file(p_file, p_file.name)
                 return
-            ext = table.get(mime, '')
+            ext = table.get(mime, "")
             if ext:
                 p_file_to = p_file.with_suffix(ext).name
                 ctx.copy_file(p_file, p_file_to)
@@ -297,8 +294,7 @@ class AddExtensionAction(Action):
 
 
 class Walker:
-    """_summary_
-    """
+    """_summary_"""
 
     def __init__(self, parent, path, config) -> None:
         self.path = path
@@ -328,29 +324,31 @@ class Walker:
             p_file_from (_type_): _description_
             p_file_to (_type_): _description_
         """
-        p_base_dir = self.config.get('output', None)
+        p_base_dir = self.config.get("output", None)
         if p_base_dir is None:
             p_base_dir = Path.cwd()
 
         p_destination = Path(p_base_dir) / self.directory_name() / p_file_to
+        p_destination = Path(normalize_path(str(p_destination)))
 
         # check dry-run
-        if self.config.get('dry_run', False):
+        if self.config.get("dry_run", False):
             print(f"From: {p_file_from} -> {p_destination}. DRY-RUN!")
             return
 
         # check if destination exists (and force is set!)
         if p_destination.exists():
-            #check is force
-            if not self.config.get('force', False):
-                if self.config.get('debug', False):
+            # check is force
+            if not self.config.get("force", False):
+                if self.config.get("debug", False):
                     print(
-                        f"COPY Failed! Destination file {p_destination} already exists! Skipping..")
+                        f"COPY Failed! Destination file {p_destination} already exists! Skipping.."
+                    )
                 return
 
         # print file copy
-        if self.config.get('no_progress', False):
-            print("From: {p_file_from} -> {p_destination}.", end='')
+        if self.config.get("no_progress", False):
+            print("From: {p_file_from} -> {p_destination}.", end="")
 
         # ensures that directory exists
         if not Path(p_destination).parent.exists():
@@ -359,7 +357,7 @@ class Walker:
         # copy file to new location
         shutil.copy(p_file_from, p_destination)
         # prints done!
-        if self.config.get('no_progress', False):
+        if self.config.get("no_progress", False):
             print("Done!")
 
     @property
@@ -409,7 +407,7 @@ class FileWalker(Walker):
 
     def __init__(self, parent, path, config) -> None:
         if not Path(path).is_file():
-            raise ValueError('this class expects an file')
+            raise ValueError("this class expects an file")
         self.file_path = path
         path = path.parent
         super().__init__(parent, path, config)
@@ -432,7 +430,7 @@ class DirectoryWalker(Walker):
 
     def __init__(self, parent, path, config) -> None:
         if not Path(path).is_dir():
-            raise ValueError('this class expects an directory')
+            raise ValueError("this class expects an directory")
         super().__init__(parent, path, config)
         self._device_name = None
 
@@ -448,3 +446,7 @@ class DirectoryWalker(Walker):
                 dir_walker.walk(action)
             else:
                 self.execute(action, child)
+
+
+def normalize_path(path):
+    return re.sub('[\:*?"<>|]', "_", path)
