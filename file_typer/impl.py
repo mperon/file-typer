@@ -282,7 +282,12 @@ class AddExtensionAction(Action):
             p_file_to = real_path
             ctx.copy_file(p_file, p_file_to)
         else:
-            mime = magic.from_file(p_file, mime=True)
+            try:
+                mime = magic.from_file(str(p_file), mime=True)
+            except Exception as _:
+                print(f"Impossible to detect mime for {p_file}. Copying..")
+                ctx.copy_file(p_file, p_file.name)
+                return
             ext = table.get(mime, '')
             if ext:
                 p_file_to = p_file.with_suffix(ext).name
