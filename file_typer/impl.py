@@ -328,8 +328,9 @@ class Walker:
         if p_base_dir is None:
             p_base_dir = Path.cwd()
 
-        p_destination = Path(p_base_dir) / self.directory_name() / p_file_to
-        p_destination = Path(normalize_path(str(p_destination)))
+        p_destination = Path(p_base_dir) / Path(
+            normalize_path(str(self.directory_name() / p_file_to))
+        )
 
         # check dry-run
         if self.config.get("dry_run", False):
