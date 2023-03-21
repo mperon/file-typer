@@ -4,6 +4,7 @@
 import io
 import json
 import os
+import pathlib
 import plistlib
 import re
 import shutil
@@ -268,7 +269,7 @@ class AddExtensionAction(Action):
             return
         # check file has already extension
         if len(p_file.suffixes) > 0:
-            if ctx.config["no_copy"]:
+            if ctx.config["only_changed"]:
                 return
             ctx.copy_file(p_file, p_file.name)
             return
@@ -288,7 +289,7 @@ class AddExtensionAction(Action):
             ext = table.get(mime, "")
             if ext:
                 p_file_to = p_file.with_suffix(ext).name
-                ctx.copy_file(p_file, p_file_to)
+                ctx.copy_file(p_file, p_file_to, relative=False)
             else:
                 self.unknown.add(mime)
 
@@ -313,28 +314,39 @@ class Walker:
         Returns:
             _type_: _description_
         """
-        if self.parent:
-            return self.parent.directory_name() + "/" + self.path.name
-        return self.path.name
+        if self.parent is not None:
+            parent_name = self.parent.directory_name()
+            if parent_name:
+                return self.parent.directory_name() + pathlib.os.sep + self.path.name
+            return self.path.name
+        return ""
 
-    def copy_file(self, p_file_from, p_file_to):
+    def copy_file(self, p_file_from, p_file_to, relative=True):
         """_summary_
 
         Args:
             p_file_from (_type_): _description_
             p_file_to (_type_): _description_
         """
-        p_base_dir = self.config.get("output", None)
+        p_base_dir = Path(self.config.get("output", None))
         if p_base_dir is None:
             p_base_dir = Path.cwd()
 
-        p_destination = Path(p_base_dir) / Path(
-            normalize_path(str(self.directory_name() / p_file_to))
-        )
+        if relative:
+            p_destination = Path(p_base_dir) / self.directory_name() / p_file_to
+        else:
+            p_destination = p_base_dir / p_file_to
+
+        if p_destination == p_file_from:
+            return
+
+        p_destination = normalize_path(p_destination)
 
         # check dry-run
         if self.config.get("dry_run", False):
             print(f"From: {p_file_from} -> {p_destination}. DRY-RUN!")
+            if self.config.get("delete", False):
+                print(f"Delete {p_file_from}")
             return
 
         # check if destination exists (and force is set!)
@@ -357,6 +369,8 @@ class Walker:
 
         # copy file to new location
         shutil.copy(p_file_from, p_destination)
+        if self.config.get("delete", False):
+            p_file_from.unlink()
         # prints done!
         if self.config.get("no_progress", False):
             print("Done!")
@@ -450,4 +464,5 @@ class DirectoryWalker(Walker):
 
 
 def normalize_path(path):
-    return re.sub('[\:*?"<>|]', "_", path)
+    """Normalize pathnames"""
+    return Path(re.sub(r'[*?"<>|]', "_", str(path)))
