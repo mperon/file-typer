@@ -23,11 +23,11 @@ release:
 	git add .bumpversion.cfg setup.py file_typer/__main__.py
 	git commit --allow-empty -m Release\ `python setup.py --version`
 	git push --all
-	git tag -a v`python setup.py --version` -m "Version `python setup.py --version`"
+	git tag -s -a v`python setup.py --version` -m "Version `python setup.py --version`"
 	git push --tags
 
 tag:
-	git tag -a v`python setup.py --version` -m "Version `python setup.py --version`"
+	git tag -s -a v`python setup.py --version` -m "Version `python setup.py --version`"
 	git push --tags
 
 minor:
